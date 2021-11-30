@@ -1,0 +1,144 @@
+<html id="html">
+
+<head>
+    <title>Sistema Solar Grupo XX</title>
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <script src="./twgl.js-master\dist\4.x\twgl-full.js"></script>
+    <link rel="stylesheet" href="./sistema_solar.css">
+</head>
+
+<body>
+    <doctype html="">
+        <!--Nuno Garcia, Faculdade de Ciências, Universidade de Lisboa, 2021-->
+        <title>Projeto</title>
+
+        <canvas id="canvas"></canvas>
+        <script id="vs" type="notjs">
+                uniform mat4 u_worldViewProjection;
+
+                attribute vec4 position;
+                attribute vec2 texcoord;
+                varying vec2 v_texcoord;
+                
+                void main() {
+                    gl_Position = u_worldViewProjection * position;
+                    v_texcoord = texcoord;
+                } 
+            </script>
+
+        <script id="fs" type="notjs">
+                precision mediump float;
+
+                varying vec2 v_texcoord;
+                uniform sampler2D u_texture;
+                
+                void main() {
+                    gl_FragColor = texture2D(u_texture, v_texcoord);
+
+                }
+            </script>
+
+        <script>
+            const m4 = twgl.m4;
+            const gl = document.querySelector("canvas").getContext("webgl");
+            const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+
+            //Definir planetas
+            const sunInfo = twgl.primitives.createSphereBufferInfo(gl, 139, 30, 30);
+            var sunTex = twgl.createTexture(gl, { src: './Textures/sun.jpg' });
+
+            const mercuryInfo = twgl.primitives.createSphereBufferInfo(gl, 2, 25, 25);
+            var mercuryTex = twgl.createTexture(gl, { src: './Textures/mercury.jpg' });
+
+            const venusInfo = twgl.primitives.createSphereBufferInfo(gl, 6, 25, 25);
+            var venusTex = twgl.createTexture(gl, { src: './Textures/venus.jpg' });
+
+            const earthInfo = twgl.primitives.createSphereBufferInfo(gl, 6.7, 25, 25);
+            var earthTex = twgl.createTexture(gl, { src: './Textures/earth.jpg' });
+
+            const marsInfo = twgl.primitives.createSphereBufferInfo(gl, 3.5, 25, 25);
+            var marsTex = twgl.createTexture(gl, { src: './Textures/mars.jpg' });
+
+            const jupiterInfo = twgl.primitives.createSphereBufferInfo(gl, 71, 25, 25);
+            var jupiterTex = twgl.createTexture(gl, { src: './Textures/jupiter.jpg' });
+
+            const saturnInfo = twgl.primitives.createSphereBufferInfo(gl, 58, 25, 25);
+            var saturnTex = twgl.createTexture(gl, { src: './Textures/saturn.jpg' });
+
+            const uranusInfo = twgl.primitives.createSphereBufferInfo(gl, 23, 25, 25);
+            var uranusTex = twgl.createTexture(gl, { src: './Textures/uranus.jpg' });
+
+            const neptuneInfo = twgl.primitives.createSphereBufferInfo(gl, 22.5, 25, 25);
+            var neptuneTex = twgl.createTexture(gl, { src: './Textures/neptune.jpg' });
+
+            const planetsInfo = [sunInfo, mercuryInfo, venusInfo, earthInfo, marsInfo, jupiterInfo, saturnInfo, uranusInfo, neptuneInfo];
+            const planetsTex = [sunTex, mercuryTex, venusTex, earthTex, marsTex, jupiterTex, saturnTex, uranusTex, neptuneTex];
+            var uniforms = {};
+
+            function render(time) {
+                twgl.resizeCanvasToDisplaySize(gl.canvas);
+                gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+                gl.enable(gl.DEPTH_TEST);
+                gl.enable(gl.CULL_FACE);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                const fov = 30 * Math.PI / 180;
+                const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+                const zNear = 0.1;
+                const zFar = 100000;
+                const projection = m4.perspective(fov, aspect, zNear, zFar);
+                const eye = [0, 0, -900];
+                const target = [200, 0, 0];
+                const up = [0, 1, 0];
+
+                const camera = m4.lookAt(eye, target, up);
+                const view = m4.inverse(camera);
+                const viewProjection = m4.multiply(projection, view);
+
+                const sun = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/100000, 0));
+                
+                const mercury = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(mercury, [150,0,0], mercury);
+                
+                const venus = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(venus, [200, 0, 0], venus);
+
+                const earth = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/3000, 0));
+                m4.setTranslation(earth, [250,0,0], earth);
+                
+                const mars = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(mars, [300,0,0], mars);
+
+                const jupiter = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(jupiter, [450,0,0], jupiter);
+                
+                const saturn = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(saturn, [650,0,0], saturn);
+
+                const uranus = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(uranus, [750,0,0], uranus);
+                
+                const neptune = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                m4.setTranslation(neptune, [800,0,0], neptune);
+
+                const planets = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune];
+                
+                gl.useProgram(programInfo.program);
+
+                for (let i = 0; i < planetsInfo.length; i++) {
+                    uniforms.u_world = planets[i];
+                    uniforms.u_worldViewProjection = m4.multiply(viewProjection, planets[i]);
+                    uniforms.u_texture = planetsTex[i];
+                    twgl.setBuffersAndAttributes(gl, programInfo, planetsInfo[i]);
+                    twgl.setUniforms(programInfo, uniforms);
+                    twgl.drawBufferInfo(gl, planetsInfo[i]);
+                }
+
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        </script>
+</body>
+
+</html>
