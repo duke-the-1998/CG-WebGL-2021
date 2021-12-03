@@ -33,7 +33,7 @@
                 uniform sampler2D u_texture;
                 
                 void main() {
-                    gl_FragColor = texture2D(u_texture, v_texcoord);
+                    gl_FragColor = 0.2 * vec4(1.0, 0.0, 0.0, 1.0) + 0.8 * texture2D(u_texture, v_texcoord);
 
                 }
             </script>
@@ -44,7 +44,7 @@
             const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
             //Definir planetas
-            const sunInfo = twgl.primitives.createSphereBufferInfo(gl, 139, 30, 30);
+            const sunInfo = twgl.primitives.createSphereBufferInfo(gl, 200, 30, 30);
             var sunTex = twgl.createTexture(gl, { src: './Textures/sun.jpg' });
 
             const mercuryInfo = twgl.primitives.createSphereBufferInfo(gl, 2, 25, 25);
@@ -83,13 +83,13 @@
                 gl.enable(gl.CULL_FACE);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                const fov = 30 * Math.PI / 180;
+                const fov = 60 * Math.PI / 180;
                 const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
                 const zNear = 0.1;
                 const zFar = 100000;
                 const projection = m4.perspective(fov, aspect, zNear, zFar);
                 const eye = [0, 0, -900];
-                const target = [200, 0, 0];
+                const target = [0, 0, 0];
                 const up = [0, 1, 0];
 
                 const camera = m4.lookAt(eye, target, up);
@@ -99,28 +99,28 @@
                 const sun = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/100000, 0));
                 
                 const mercury = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(mercury, [150,0,0], mercury);
+                m4.setTranslation(mercury, [Math.cos((time/1000) % 360) * 206, 0, Math.sin((time/1000) % 360) * 206], mercury);
                 
                 const venus = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(venus, [200, 0, 0], venus);
+                m4.setTranslation(venus, [Math.cos((time/1000) % 360) * 211, 0, Math.sin((time/1000) % 360) * 211], venus);
 
                 const earth = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/3000, 0));
-                m4.setTranslation(earth, [250,0,0], earth);
+                m4.setTranslation(earth, [Math.cos((time/1000) % 360) * 425, 0, Math.sin((time/1000) % 360) * 425], earth);
                 
                 const mars = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(mars, [300,0,0], mars);
+                m4.setTranslation(mars, [Math.cos((time/1000) % 360) * 260, 0, Math.sin((time/1000) % 360) * 260], mars);
 
                 const jupiter = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(jupiter, [450,0,0], jupiter);
+                m4.setTranslation(jupiter, [Math.cos((time/1000) % 360) * 700, 0, Math.sin((time/1000) % 360) * 700], jupiter);
                 
                 const saturn = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(saturn, [650,0,0], saturn);
+                m4.setTranslation(saturn, [Math.cos((time/1000) % 360) * 700, 0, Math.sin((time/1000) % 360) * 700], saturn);
 
                 const uranus = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(uranus, [750,0,0], uranus);
+                m4.setTranslation(uranus, [Math.cos((time/1000) % 360) * 700, 0, Math.sin((time/1000) % 360) * 700], uranus);
                 
                 const neptune = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(neptune, [800,0,0], neptune);
+                m4.setTranslation(neptune, [Math.cos((time/1000) % 360) * 1040, 0, Math.sin((time/1000) % 360) * 1040], neptune);
 
                 const planets = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune];
                 
