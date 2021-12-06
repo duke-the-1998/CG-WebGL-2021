@@ -1,7 +1,7 @@
 <html id="html">
 
 <head>
-    <title>Sistema Solar Grupo XX</title>
+    <title>Sistema Solar Grupo 02</title>
     <meta http-equiv="content-type" content="text/html; charset=windows-1252">
     <script src="./twgl.js-master\dist\4.x\twgl-full.js"></script>
     <link rel="stylesheet" href="./sistema_solar.css">
@@ -43,6 +43,7 @@
             const gl = document.querySelector("canvas").getContext("webgl");
             const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 
+
             //Definir planetas
             const sunInfo = twgl.primitives.createSphereBufferInfo(gl, 200, 30, 30);
             var sunTex = twgl.createTexture(gl, { src: './Textures/sun.jpg' });
@@ -83,12 +84,12 @@
                 gl.enable(gl.CULL_FACE);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                const fov = 60 * Math.PI / 180;
+                const fov = 30 * Math.PI / 180;
                 const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
                 const zNear = 0.1;
                 const zFar = 100000;
                 const projection = m4.perspective(fov, aspect, zNear, zFar);
-                const eye = [0, 0, -900];
+                const eye = [0, 0, -950];
                 const target = [0, 0, 0];
                 const up = [0, 1, 0];
 
@@ -96,31 +97,31 @@
                 const view = m4.inverse(camera);
                 const viewProjection = m4.multiply(projection, view);
 
-                const sun = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/100000, 0));
+                const sun = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
                 
-                const mercury = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(mercury, [Math.cos((time/88) % 360) * 210, 0, Math.sin((time/88) % 360) * 210], mercury);
+                const mercury = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/14160, 0));
+                m4.setTranslation(mercury, [Math.cos((time/880) % 360) * 210, 0, Math.sin((time/880) % 360) * 210], mercury);
                 
-                const venus = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(venus, [Math.cos((time/224) % 360) * 220, 0, Math.sin((time/224) % 360) * 220], venus);
+                const venus = m4.multiply(m4.rotationX(46, 0), m4.rotationY(time/58320, 0));
+                m4.setTranslation(venus, [Math.cos((time/2240) % 360) * 220, 0, Math.sin((time/2240) % 360) * 220], venus);
 
-                const earth = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/3000, 0));
-                m4.setTranslation(earth, [Math.cos((time/365) % 360) * 250, 0, Math.sin((time/365) % 360) * 250], earth);
+                const earth = m4.multiply(m4.rotationZ(-6, 0), m4.rotationY(time/2400, 0));
+                m4.setTranslation(earth, [Math.cos((time/3650) % 360) * 250, 0, Math.sin((time/3650) % 360) * 250], earth);
                 
-                const mars = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(mars, [Math.cos((time/687) % 360) * 320, 0, Math.sin((time/687) % 360) * 320], mars);
+                const mars = m4.multiply(m4.rotationX(-6.1, 0), m4.rotationY(time/2460, 0));
+                m4.setTranslation(mars, [Math.cos((time/6870) % 360) * 320, 0, Math.sin((time/6870) % 360) * 320], mars);
 
-                const jupiter = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                const jupiter = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/1000, 0));
                 m4.setTranslation(jupiter, [Math.cos((time/4344) % 360) * 1095, 0, Math.sin((time/4344) % 360) * 1095], jupiter);
                 
-                const saturn = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                const saturn = m4.multiply(m4.rotationX(-6.5, 0), m4.rotationY(time/1065, 0));
                 m4.setTranslation(saturn, [Math.cos((time/10767) % 360) * 2007, 0, Math.sin((time/10767) % 360) * 2007], saturn);
 
-                const uranus = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                const uranus = m4.multiply(m4.rotationX(26, 0), m4.rotationY(time/1800, 0));
                 m4.setTranslation(uranus, [Math.cos((time/30663) % 360) * 4029, 0, Math.sin((time/30663) % 360) * 4029], uranus);
                 
-                const neptune = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
-                m4.setTranslation(neptune, [Math.cos((time/60148) % 6310) * 1040, 0, Math.sin((time/60148) % 360) * 6310], neptune);
+                const neptune = m4.multiply(m4.rotationX(-6.5, 0), m4.rotationY(time/1600, 0));
+                m4.setTranslation(neptune, [Math.cos((time/60148) % 6310) * 6310, 0, Math.sin((time/60148) % 360) * 6310], neptune);
 
                 const planets = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune];
                 
