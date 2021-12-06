@@ -57,6 +57,9 @@
             const earthInfo = twgl.primitives.createSphereBufferInfo(gl, 6.7, 25, 25);
             var earthTex = twgl.createTexture(gl, { src: './Textures/earth.jpg' });
 
+            const moonInfo = twgl.primitives.createSphereBufferInfo(gl, 2, 25, 25);
+            var moonTex = twgl.createTexture(gl, { src: './Textures/moon.jpg' });
+
             const marsInfo = twgl.primitives.createSphereBufferInfo(gl, 3.5, 25, 25);
             var marsTex = twgl.createTexture(gl, { src: './Textures/mars.jpg' });
 
@@ -72,8 +75,8 @@
             const neptuneInfo = twgl.primitives.createSphereBufferInfo(gl, 22.5, 25, 25);
             var neptuneTex = twgl.createTexture(gl, { src: './Textures/neptune.jpg' });
 
-            const planetsInfo = [sunInfo, mercuryInfo, venusInfo, earthInfo, marsInfo, jupiterInfo, saturnInfo, uranusInfo, neptuneInfo];
-            const planetsTex = [sunTex, mercuryTex, venusTex, earthTex, marsTex, jupiterTex, saturnTex, uranusTex, neptuneTex];
+            const planetsInfo = [sunInfo, mercuryInfo, venusInfo, earthInfo, marsInfo, jupiterInfo, saturnInfo, uranusInfo, neptuneInfo, moonInfo];
+            const planetsTex = [sunTex, mercuryTex, venusTex, earthTex, marsTex, jupiterTex, saturnTex, uranusTex, neptuneTex, moonTex];
             var uniforms = {};
 
             function render(time) {
@@ -89,7 +92,7 @@
                 const zNear = 0.1;
                 const zFar = 100000;
                 const projection = m4.perspective(fov, aspect, zNear, zFar);
-                const eye = [0, 0, -950];
+                const eye = [0, 0, -900];
                 const target = [0, 0, 0];
                 const up = [0, 1, 0];
 
@@ -107,6 +110,9 @@
 
                 const earth = m4.multiply(m4.rotationZ(-6, 0), m4.rotationY(time/2400, 0));
                 m4.setTranslation(earth, [Math.cos((time/3650) % 360) * 250, 0, Math.sin((time/3650) % 360) * 250], earth);
+
+                const moon = m4.multiply(m4.rotationZ(0, 0), m4.rotationY(time/1000000, 0));
+                m4.setTranslation(moon, [Math.cos((time/3650) % 360) * 260, 0, Math.sin((time/3650) % 360) * 260], moon);
                 
                 const mars = m4.multiply(m4.rotationX(-6.1, 0), m4.rotationY(time/2460, 0));
                 m4.setTranslation(mars, [Math.cos((time/6870) % 360) * 320, 0, Math.sin((time/6870) % 360) * 320], mars);
@@ -123,7 +129,7 @@
                 const neptune = m4.multiply(m4.rotationX(-6.5, 0), m4.rotationY(time/1600, 0));
                 m4.setTranslation(neptune, [Math.cos((time/60148) % 6310) * 6310, 0, Math.sin((time/60148) % 360) * 6310], neptune);
 
-                const planets = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune];
+                const planets = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, moon];
                 
                 gl.useProgram(programInfo.program);
 
@@ -140,6 +146,7 @@
             }
             requestAnimationFrame(render);
         </script>
+
 </body>
 
 </html>
