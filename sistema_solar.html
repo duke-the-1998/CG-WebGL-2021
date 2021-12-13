@@ -12,28 +12,61 @@
         <title>CG02</title>
         <canvas id="canvas"></canvas>
         <script id="vs" type="notjs">
-            uniform mat4 u_worldViewProjection;
+            uniform mat4 u_worldViewProjection, modelview, normalMat;
 
             attribute vec4 position;
+            attribute vec3 normal;
             attribute vec2 texcoord;
+
+            varying vec3 normalInterp;
+            varying vec3 vertPos;
             varying vec2 v_texcoord;
-            
-            void main() {
-                gl_Position = u_worldViewProjection * position;
+
+            void main(){
+                vec4 vertPos4 = modelview * vec4(position.xyz, 1.0);
+                vertPos = vec3(vertPos4) / vertPos4.w;
+                normalInterp = vec3(normalMat * vec4(normal, 0.0));
                 v_texcoord = texcoord;
-            } 
+                gl_Position = u_worldViewProjection * position;
+            }
         </script>
 
         <script id="fs" type="notjs">
             precision mediump float;
-
-            varying vec2 v_texcoord;
-            uniform sampler2D u_texture;
             
-            void main() {
-                gl_FragColor = texture2D(u_texture, v_texcoord);
+            uniform sampler2D u_texture;
 
+            varying vec3 normalInterp;
+            varying vec3 vertPos;
+            varying vec2 v_texcoord;
+
+            void main() {
+                vec3 ambientColor = vec3(1,1,1);
+                vec3 lightPos = vec3(0,0,0);
+                vec3 specularColor = vec3(0.2,0.2,0.2);
+                vec3 N = normalize(normalInterp);
+                vec3 L = normalize(lightPos - vertPos);
+
+                float Ka = 0.2;
+                float Kd = 1.0;
+                float Ks = 1.0;
+                float shininessVal = 120.0;
+                float lambertian = max(dot(N, L), 0.0);
+                float specular = 0.0;
+
+                if(lambertian > 0.0) {
+                    vec3 R = reflect(-L, N);      // Reflected light vector
+                    vec3 V = normalize(-vertPos); // Vector to viewer
+                    // Compute the specular term
+                    float specAngle = max(dot(R, V), 0.0);
+                    specular = pow(specAngle, shininessVal);
+                }
+                vec4 text = texture2D(u_texture, v_texcoord);
+                gl_FragColor = vec4(Ka * text.rgb +
+                                    Kd * lambertian * text.rgb +
+                                    Ks * specular * specularColor, text.a);
             }
+
         </script>
 
 
@@ -140,7 +173,7 @@
             const zNear = 0.1;
             const zFar = 100000;
             const projection = m4.perspective(fov, aspect, zNear, zFar);
-            var eye = [0, 500, -900];
+            var eye = [0, 500, -1000];
             var target = [0, 0, 0];
             const up = [0, 1, 0];
 
@@ -238,9 +271,10 @@
 
                 //render planets
                 for (let i = 0; i < planetsInfo.length; i++) {
-                    uniforms.u_world = planets_rotation[i];
                     uniforms.u_worldViewProjection = m4.multiply(viewProjection, planets_rotation[i]);
                     uniforms.u_texture = planetsInfo[i].texture;
+                    uniforms.modelview = m4.multiply(view, planets_rotation[i]);
+                    uniforms.normalMat = m4.transpose(m4.inverse(planets_rotation[i]));
                     twgl.setBuffersAndAttributes(gl, programInfo, planetsInfo[i].planet);
                     twgl.setUniforms(programInfo, uniforms);
                     twgl.drawBufferInfo(gl, planetsInfo[i].planet);
