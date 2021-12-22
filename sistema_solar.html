@@ -182,7 +182,7 @@
                 viewProjection: m4.identity()
             }
 
-            const planetsInfo = [sunInfo, mercuryInfo, venusInfo, earthInfo, moonInfo, marsInfo, jupiterInfo, saturnInfo, ringSaturnInfo, uranusInfo, neptuneInfo];
+            const planetsInfo = [mercuryInfo, venusInfo, earthInfo, moonInfo, marsInfo, jupiterInfo, saturnInfo, ringSaturnInfo, uranusInfo, neptuneInfo];
             var uniforms = {};
 
             const fov = 80 * Math.PI / 180;
@@ -252,7 +252,7 @@
                     }
                 });
 
-                const sun = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0));
+                const sun = m4.identity();
                 
                 const mercury = m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/14160, 0));
                 m4.setTranslation(mercury, [Math.cos((time/880) % 360) * 210, 0, Math.sin((time/880) % 360) * 210], mercury);
@@ -281,12 +281,19 @@
                 const uranus = m4.multiply(m4.rotationX(26, 0), m4.rotationY(time/1800, 0));
                 m4.setTranslation(uranus, [Math.cos((time/30663) % 360) * 4029, 0, Math.sin((time/30663) % 360) * 4029], uranus);
                 
-                var uranusOrbit =  m4.multiply(m4.rotationX(0, 0), m4.rotationY(time/10000, 0))
-
                 const neptune = m4.multiply(m4.rotationX(-6.5, 0), m4.rotationY(time/1600, 0));
                 m4.setTranslation(neptune, [Math.cos((time/60148) % 6310) * 6310, 0, Math.sin((time/60148) % 360) * 6310], neptune);
                 
-                const planets_rotation = [sun, mercury, venus, earth, moon, mars, jupiter, saturn, ringSaturn, uranus, neptune];
+                const planets_rotation = [mercury, venus, earth, moon, mars, jupiter, saturn, ringSaturn, uranus, neptune];
+
+                //render sun
+                uniforms.u_worldViewProjection = m4.multiply(viewProjection, sun);
+                uniforms.u_texture = sunInfo.texture;
+                uniforms.model = viewProjection;
+                uniforms.normalMat = m4.transpose(m4.inverse(viewProjection));
+                twgl.setBuffersAndAttributes(gl, programInfo, sunInfo.planet);
+                twgl.setUniforms(programInfo, uniforms);
+                twgl.drawBufferInfo(gl, sunInfo.planet);
 
                 //render planets
                 for (let i = 0; i < planetsInfo.length; i++) {
@@ -301,7 +308,7 @@
 
                 //render orbits
                 for (let i = 0; i < planetsInfo.length; i++) {
-                    if(planetsInfo[i].orbit != null) {
+                    if(planetsInfo[i]. orbit != null) {
                         uniforms.u_world = planetsInfo[i].viewProjection;
                         uniforms.u_worldViewProjection = m4.multiply(viewProjection, planetsInfo[i].viewProjection);
                         uniforms.u_texture = planetsInfo[i].orbitTex;
