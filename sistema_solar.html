@@ -11,6 +11,7 @@
     <doctype html="">
         <title>CG02</title>
         <canvas id="canvas"></canvas>
+        
         <script id="vs" type="notjs">
             uniform mat4 u_worldViewProjection, model, normalMat;
 
@@ -181,6 +182,9 @@
             var view = m4.inverse(camera);
             var viewProjection = m4.multiply(projection, view);
 
+            //Flag das orbitas
+            var showOrbits = false;
+
             function render(time) {
                 twgl.resizeCanvasToDisplaySize(gl.canvas);
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -191,7 +195,7 @@
                 
                 gl.useProgram(programInfo.program);
 
-
+                //Input keys
                 window.addEventListener("keydown", function(event) {
                     if (event.defaultPrevented) {
                         return; // Do nothing if event already handled
@@ -247,6 +251,10 @@
                             camera = m4.lookAt(eye, target, up);
                             view = m4.inverse(camera);
                             viewProjection = m4.multiply(projection,view);  
+                            break;
+                        
+                        case "KeyO":
+                            showOrbits = !showOrbits;
                             break;
                     }
                 });
@@ -306,14 +314,16 @@
                 }
 
                 //render orbits
-                for (let i = 0; i < planetsInfo.length; i++) {
-                    if(planetsInfo[i]. orbit != null) {
-                        uniforms.u_world = planetsInfo[i].viewProjection;
-                        uniforms.u_worldViewProjection = m4.multiply(viewProjection, planetsInfo[i].viewProjection);
-                        uniforms.u_texture = planetsInfo[i].orbitTex;
-                        twgl.setBuffersAndAttributes(gl, programInfo, planetsInfo[i].orbit);
-                        twgl.setUniforms(programInfo, uniforms);
-                        twgl.drawBufferInfo(gl, planetsInfo[i].orbit);
+                if(showOrbits) {
+                    for (let i = 0; i < planetsInfo.length; i++) {
+                        if(planetsInfo[i]. orbit != null) {
+                            uniforms.u_world = planetsInfo[i].viewProjection;
+                            uniforms.u_worldViewProjection = m4.multiply(viewProjection, planetsInfo[i].viewProjection);
+                            uniforms.u_texture = planetsInfo[i].orbitTex;
+                            twgl.setBuffersAndAttributes(gl, programInfo, planetsInfo[i].orbit);
+                            twgl.setUniforms(programInfo, uniforms);
+                            twgl.drawBufferInfo(gl, planetsInfo[i].orbit);
+                        }
                     }
                 }
 
